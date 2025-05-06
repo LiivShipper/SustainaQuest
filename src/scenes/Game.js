@@ -19,23 +19,49 @@ export class Game extends Scene {
     }
 
     create() {
-        const mapa = this.make.tilemap({ key: 'mapa' });
-        const elementos = mapa.addTilesetImage('tilesets', 'tiles');
+        this.textures.get('tiles').setFilter(Phaser.Textures.FilterMode.NEAREST);
 
-        mapa.createLayer('grama', elementos, 0, 0);
-        mapa.createLayer('agua', elementos, 0, 0);
-        mapa.createLayer('vila', elementos, 0, 0);
-        mapa.createLayer('energiaEolica', elementos, 0, 0);
-        mapa.createLayer('energiaHidreletrica', elementos, 0, 0);
-        mapa.createLayer('energiaMaremotriz', elementos, 0, 0);
-        mapa.createLayer('energiaBiomassa', elementos, 0, 0);
-        mapa.createLayer('energiaHidrogenio', elementos, 0, 0);
-        mapa.createLayer('energiaSolar', elementos, 0, 0);
-        mapa.createLayer('energiaGeotermica', elementos, 0, 0);
+        const mapa = this.make.tilemap({ key: 'mapa' });
+        mapa.setRenderOrder('right-down');
+        const elementos = mapa.addTilesetImage('tilesets', 'tiles');  
+
+        const grama = mapa.createLayer('grama', elementos, 0, 0);
+        const agua = mapa.createLayer('agua', elementos, 0, 0);
+        const vila = mapa.createLayer('vila', elementos, 0, 0);
+        const energiaEolica = mapa.createLayer('energiaEolica', elementos, 0, 0);
+        const energiaHidreletrica = mapa.createLayer('energiaHidreletrica', elementos, 0, 0);
+        const energiaMaremotriz = mapa.createLayer('energiaMaremotriz', elementos, 0, 0);
+        const energiaBiomassa = mapa.createLayer('energiaBiomassa', elementos, 0, 0);
+        const energiaHidrogenio = mapa.createLayer('energiaHidrogenio', elementos, 0, 0);
+        const energiaSolar = mapa.createLayer('energiaSolar', elementos, 0, 0);
+        const energiaGeotermica = mapa.createLayer('energiaGeotermica', elementos, 0, 0);
+        const porBaixo = mapa.createLayer('porBaixo', elementos, 0, 0);
+        porBaixo.setDepth(10);
+
+        const camadas = [
+            grama,
+            agua,
+            vila,
+            energiaEolica,
+            energiaHidreletrica,
+            energiaMaremotriz,
+            energiaBiomassa,
+            energiaHidrogenio,
+            energiaSolar,
+            energiaGeotermica,
+            porBaixo
+        ];
 
         this.player = this.physics.add.sprite(70, 810, "player");
-        this.player.setScale(1.5);
+        this.player.setScale(1.2);
+        this.player.body.setSize(20, 32);
+        this.player.body.setOffset(6, 32);
         this.cursors = this.input.keyboard.createCursorKeys();
+
+        camadas.forEach(camadas => {
+            camadas.setCollisionByProperty({ colider: true });
+            this.physics.add.collider(this.player, camadas);
+        })
 
         this.anims.create({
             key: 'frente',
@@ -65,7 +91,7 @@ export class Game extends Scene {
         const camera = this.cameras.main;
         camera.setBounds(0, 0, mapa.widthInPixels, mapa.heightInPixels);
         camera.startFollow(this.player);
-        camera.setZoom(2);
+        camera.setZoom(1.5);
     }
 
     update() {

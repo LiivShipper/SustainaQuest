@@ -11,6 +11,7 @@ const config = {
     width: 1024,
     height: 768,
     parent: 'game-container',
+    pixelart: true,
     physics: {
       default: 'arcade',
       arcade: {
@@ -30,5 +31,6 @@ const config = {
       GameOver
     ]
   };
+  
 
 export default new Phaser.Game(config);
