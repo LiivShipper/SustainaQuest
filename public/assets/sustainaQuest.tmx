@@ -3144,7 +3144,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="15" name="player">
+ <objectgroup id="15" name="player" offsetx="1.33333" offsety="-15.3333">
   <object id="1" name="spawnPoint" type="spawnPoint" x="27.7683" y="846.331">
    <point/>
   </object>
