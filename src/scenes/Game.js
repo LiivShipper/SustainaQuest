@@ -10,9 +10,9 @@ export class Game extends Scene {
     preload() {
         this.load.image('tiles', 'assets/tilesets.png');
         this.load.tilemapTiledJSON('mapa', 'assets/sustainaQuest.json');
-        this.load.spritesheet('player', 'assets/player.png', {
+        this.load.spritesheet('player', 'assets/player22.png', {
             frameWidth: 32,
-            frameHeight: 64,
+            frameHeight: 32,
         });
     }
 
@@ -44,9 +44,9 @@ export class Game extends Scene {
         const spawnPoint = mapa.findObject('player', obj => obj.name === 'spawnPoint');
         console.log(spawnPoint);
 
-        this.player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, "player").setScale(1.2);
-        this.player.body.setSize(20, 32);
-        this.player.body.setOffset(6, 32);
+        this.player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, "player").setScale(2);
+        this.player.body.setSize(14, 12);
+        this.player.body.setOffset(9, 20);
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -92,25 +92,25 @@ export class Game extends Scene {
     criarAnimacoes() {
         this.anims.create({
             key: 'frente',
-            frames: this.anims.generateFrameNumbers('player', { start: 8, end: 9 }),
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 5 }),
             frameRate: 10,
             repeat: -1
         });
         this.anims.create({
             key: 'tras',
-            frames: this.anims.generateFrameNumbers('player', { start: 18, end: 19 }),
+            frames: this.anims.generateFrameNumbers('player', { start: 6, end: 11 }),
             frameRate: 10,
             repeat: -1
         });
         this.anims.create({
             key: 'direita',
-            frames: this.anims.generateFrameNumbers('player', { start: 28, end: 29 }),
+            frames: this.anims.generateFrameNumbers('player', { start: 12, end: 17 }),
             frameRate: 10,
             repeat: -1
         });
         this.anims.create({
             key: 'esquerda',
-            frames: this.anims.generateFrameNumbers('player', { start: 30, end: 31 }),
+            frames: this.anims.generateFrameNumbers('player', { start: 18, end: 23 }),
             frameRate: 10,
             repeat: -1
         });
@@ -118,11 +118,11 @@ export class Game extends Scene {
 
     definirFrameParado(velocidade) {
         if (velocidade.x < 0) {
-            this.player.setFrame(30);
+            this.player.setFrame(18);
         } else if (velocidade.x > 0) {
-            this.player.setFrame(20);
+            this.player.setFrame(12);
         } else if (velocidade.y < 0) {
-            this.player.setFrame(10);
+            this.player.setFrame(6);
         } else if (velocidade.y > 0) {
             this.player.setFrame(0);
         }
