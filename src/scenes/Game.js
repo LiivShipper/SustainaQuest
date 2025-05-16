@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
-import { quizData } from './quizData.js';     
-import { QuizModal } from './QuizModal.js';   
+import { quizData } from './quizData.js';
+import { QuizModal } from './QuizModal.js';
 
 export class Game extends Scene {
     constructor() {
@@ -19,6 +19,7 @@ export class Game extends Scene {
     }
 
     create() {
+        this.input.setDefaultCursor('default');
         this.textures.get('tiles').setFilter(Phaser.Textures.FilterMode.NEAREST);
 
         const mapa = this.make.tilemap({ key: 'mapa' });
@@ -39,7 +40,7 @@ export class Game extends Scene {
             'porBaixo'
         ];
 
-        
+
         const camadas = nomesCamadas.map(nome => mapa.createLayer(nome, tileset, 0, 0));
         const camadaPorBaixo = camadas.find(layer => layer.layer.name === 'porBaixo');
         if (camadaPorBaixo) camadaPorBaixo.setDepth(10);
@@ -50,8 +51,15 @@ export class Game extends Scene {
         this.player.body.setOffset(9, 20);
 
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.keys = this.input.keyboard.addKeys({
+            up: Phaser.Input.Keyboard.KeyCodes.W,
+            left: Phaser.Input.Keyboard.KeyCodes.A,
+            down: Phaser.Input.Keyboard.KeyCodes.S,
+            right: Phaser.Input.Keyboard.KeyCodes.D
+        });
 
-        
+
+
         camadas.forEach(camada => {
             camada.setCollisionByProperty({ colider: true });
             this.physics.add.collider(this.player, camada);
@@ -64,7 +72,6 @@ export class Game extends Scene {
         camera.startFollow(this.player);
         camera.setZoom(1.5);
 
-         
         const energias = [
             'energiaEolica',
             'energiaHidreletrica',
@@ -75,41 +82,61 @@ export class Game extends Scene {
             'energiaGeotermica',
         ];
 
-       
+
+        this.input.on('pointermove', pointer => {
+            let encontrouTile = false;
+
+            for (const nome of energias) {
+                const camadaEnergia = camadas.find(layer => layer.layer.name === nome);
+                if (!camadaEnergia) continue;
+
+                const tile = camadaEnergia.getTileAtWorldXY(pointer.worldX, pointer.worldY);
+                if (tile) {
+                    encontrouTile = true;
+                    break;
+                }
+            }
+
+            if (encontrouTile) {
+                this.input.setDefaultCursor('pointer');
+            } else {
+                this.input.setDefaultCursor('default');
+            }
+        });
+
         this.input.on('pointerdown', pointer => {
             for (const nome of energias) {
                 const camadaEnergia = camadas.find(layer => layer.layer.name === nome);
                 if (!camadaEnergia) continue;
 
-            
                 const tile = camadaEnergia.getTileAtWorldXY(pointer.worldX, pointer.worldY);
                 if (tile) {
-                    
                     this.mostrarInfoEnergia(nome);
-                    break; 
+                    break;
                 }
             }
         });
     }
 
     update() {
-        if (!this.cursors || !this.player) return;
+        if (!this.cursors || !this.player || !this.keys) return;
 
         const prevVelocity = this.player.body.velocity.clone();
         this.player.body.setVelocity(0);
 
-        if (this.cursors.left.isDown) {
+        if (this.cursors.left.isDown || this.keys.left.isDown) {
             this.player.body.setVelocityX(-150);
             this.player.anims.play('esquerda', true);
             this.player.setFlipX(false);
-        } else if (this.cursors.right.isDown) {
+        } else if (this.cursors.right.isDown || this.keys.right.isDown) {
             this.player.body.setVelocityX(150);
             this.player.anims.play('direita', true);
             this.player.setFlipX(false);
-        } else if (this.cursors.up.isDown) {
+        }
+        else if (this.cursors.up.isDown || this.keys.up.isDown) {
             this.player.body.setVelocityY(-150);
             this.player.anims.play('tras', true);
-        } else if (this.cursors.down.isDown) {
+        } else if (this.cursors.down.isDown || this.keys.down.isDown) {
             this.player.body.setVelocityY(150);
             this.player.anims.play('frente', true);
         } else {
@@ -159,13 +186,13 @@ export class Game extends Scene {
 
     mostrarInfoEnergia(nome) {
         const mapa = {
-            energiaEolica:    'energiaEolica',
+            energiaEolica: 'energiaEolica',
             energiaHidreletrica: 'hidreletrica',
-            energiaMaremotriz:   'maremotriz',
-            energiaBiomassa:     'biomassa',
-            energiaHidrogenio:   'hidrogenio',
-            energiaSolar:        'energiaSolar',
-            energiaGeotermica:   'geotermica'
+            energiaMaremotriz: 'maremotriz',
+            energiaBiomassa: 'biomassa',
+            energiaHidrogenio: 'hidrogenio',
+            energiaSolar: 'energiaSolar',
+            energiaGeotermica: 'geotermica'
         };
 
         const chaveQuiz = mapa[nome];
