@@ -1,4 +1,6 @@
 import { Scene } from 'phaser';
+import { quizData } from './quizData.js';     
+import { QuizModal } from './QuizModal.js';   
 
 export class Game extends Scene {
     constructor() {
@@ -37,19 +39,19 @@ export class Game extends Scene {
             'porBaixo'
         ];
 
+        
         const camadas = nomesCamadas.map(nome => mapa.createLayer(nome, tileset, 0, 0));
         const camadaPorBaixo = camadas.find(layer => layer.layer.name === 'porBaixo');
         if (camadaPorBaixo) camadaPorBaixo.setDepth(10);
 
         const spawnPoint = mapa.findObject('player', obj => obj.name === 'spawnPoint');
-        console.log(spawnPoint);
-
         this.player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, "player").setScale(2);
         this.player.body.setSize(14, 12);
         this.player.body.setOffset(9, 20);
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
+        
         camadas.forEach(camada => {
             camada.setCollisionByProperty({ colider: true });
             this.physics.add.collider(this.player, camada);
@@ -61,6 +63,33 @@ export class Game extends Scene {
         camera.setBounds(0, 0, mapa.widthInPixels, mapa.heightInPixels);
         camera.startFollow(this.player);
         camera.setZoom(1.5);
+
+         
+        const energias = [
+            'energiaEolica',
+            'energiaHidreletrica',
+            'energiaMaremotriz',
+            'energiaBiomassa',
+            'energiaHidrogenio',
+            'energiaSolar',
+            'energiaGeotermica',
+        ];
+
+       
+        this.input.on('pointerdown', pointer => {
+            for (const nome of energias) {
+                const camadaEnergia = camadas.find(layer => layer.layer.name === nome);
+                if (!camadaEnergia) continue;
+
+            
+                const tile = camadaEnergia.getTileAtWorldXY(pointer.worldX, pointer.worldY);
+                if (tile) {
+                    
+                    this.mostrarInfoEnergia(nome);
+                    break; 
+                }
+            }
+        });
     }
 
     update() {
@@ -126,5 +155,29 @@ export class Game extends Scene {
         } else if (velocidade.y > 0) {
             this.player.setFrame(0);
         }
+    }
+
+    mostrarInfoEnergia(nome) {
+        const mapa = {
+            energiaEolica:    'energiaEolica',
+            energiaHidreletrica: 'hidreletrica',
+            energiaMaremotriz:   'maremotriz',
+            energiaBiomassa:     'biomassa',
+            energiaHidrogenio:   'hidrogenio',
+            energiaSolar:        'energiaSolar',
+            energiaGeotermica:   'geotermica'
+        };
+
+        const chaveQuiz = mapa[nome];
+        if (!chaveQuiz) {
+            console.warn('Quiz não encontrado para', nome);
+            return;
+        }
+
+        const preguntas = quizData[chaveQuiz];
+
+        new QuizModal(preguntas, () => {
+            console.log('Quiz finalizado');
+        });
     }
 }
