@@ -185,26 +185,30 @@ export class Game extends Scene {
     }
 
     mostrarInfoEnergia(nome) {
-        const mapa = {
-            energiaEolica: 'energiaEolica',
-            energiaHidreletrica: 'hidreletrica',
-            energiaMaremotriz: 'maremotriz',
-            energiaBiomassa: 'biomassa',
-            energiaHidrogenio: 'hidrogenio',
-            energiaSolar: 'energiaSolar',
-            energiaGeotermica: 'geotermica'
-        };
+  const mapa = {
+    energiaEolica: 'energiaEolica',
+    energiaHidreletrica: 'hidreletrica',
+    energiaMaremotriz: 'maremotriz',
+    energiaBiomassa: 'biomassa',
+    energiaHidrogenio: 'hidrogenio',
+    energiaSolar: 'energiaSolar',
+    energiaGeotermica: 'geotermica'
+  };
 
-        const chaveQuiz = mapa[nome];
-        if (!chaveQuiz) {
-            console.warn('Quiz não encontrado para', nome);
-            return;
-        }
+  const chaveQuiz = mapa[nome];
+  if (!chaveQuiz) {
+    console.warn('Quiz não encontrado para', nome);
+    return;
+  }
 
-        const preguntas = quizData[chaveQuiz];
+  const perguntas = quizData[chaveQuiz];
+  if (!perguntas) {
+    console.warn('Perguntas não encontradas para chave:', chaveQuiz);
+    return;
+  }
 
-        new QuizModal(preguntas, () => {
-            console.log('Quiz finalizado');
-        });
-    }
+  new QuizModal(perguntas, chaveQuiz, () => {
+    console.log('Quiz finalizado');
+  });
+}
 }

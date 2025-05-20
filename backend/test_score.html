@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head><meta charset="UTF-8"><title>Test Score</title></head>
+<body>
+  <button id="btnSave">Salvar 150 pontos</button>
+  <div>Seu score: <span id="mostrarScore"></span></div>
+  <pre id="resp"></pre>
+
+  <script>
+    const score = 150; // puntaje fijo para el ejemplo
+    document.getElementById('mostrarScore').textContent = score;
+
+    document.getElementById('btnSave').onclick = async () => {
+      const fd = new URLSearchParams({ score: score });  // solo score
+      const r = await fetch('backend/save_score.php', { method: 'POST', body: fd });
+      const textoRespuesta = await r.text();
+      document.getElementById('resp').textContent = textoRespuesta;
+    };
+  </script>
+</body>
+</html>
