@@ -1,26 +1,45 @@
 <?php
-include 'db.php';
+header('Content-Type: application/json');
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $user_id = $_POST["user_id"] ?? '';
-    $pontuacao = $_POST["score"] ?? '';
-    $energia = $_POST["energia"] ?? '';
+$host = 'localhost';
+$dbname = 'sustainaquest_db';
+$username = 'root';
+$password = '';
 
-    if (!empty($user_id) && !empty($pontuacao)) {
-        if (!empty($energia)) {
-            $energia = (string)$energia;  
-            $stmt = $conn->prepare("INSERT INTO scores (user_id, energia, pontuacao) VALUES (?, ?, ?)");
-            $stmt->bind_param("isi", $user_id, $energia, $pontuacao);
-        } else {
-            $stmt = $conn->prepare("INSERT INTO scores (user_id, pontuacao) VALUES (?, ?)");
-            $stmt->bind_param("ii", $user_id, $pontuacao);
-        }
+$conn = new mysqli($host, $username, $password, $dbname);
 
-        if ($stmt->execute()) {
-            echo json_encode(["success" => true, "message" => "Puntuación guardada con éxito."]);
-        } else {
-            
-            echo json_encode(["success" => false, "message" => "Error guardando puntuación: " . $stmt->error]);
-        }
+if ($conn->connect_error) {
+    echo json_encode(['success' => false, 'message' => 'Error de conexión a la base de datos']);
+    exit;
+}
 
-        $stmt->close();
+$user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+$score = isset($_POST['score']) ? intval($_POST['score']) : 0;
+
+if ($user_id <= 0 || $score < 0) {
+    echo json_encode(['success' => false, 'message' => 'Datos inválidos']);
+    exit;
+}
+
+// Usar el nombre correcto de la columna: pontuacao
+$sql = "INSERT INTO scores (user_id, pontuacao) 
+        VALUES (?, ?) 
+        ON DUPLICATE KEY UPDATE pontuacao = ?";
+
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo json_encode(['success' => false, 'message' => 'Error al preparar la consulta']);
+    exit;
+}
+
+$stmt->bind_param("iii", $user_id, $score, $score);
+
+if ($stmt->execute()) {
+    echo json_encode(['success' => true, 'message' => 'Puntuación total guardada con éxito']);
+} else {
+    echo json_encode(['success' => false, 'message' => 'Error al guardar la puntuación']);
+}
+
+$stmt->close();
+$conn->close();
+

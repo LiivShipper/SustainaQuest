@@ -198,29 +198,60 @@ export class Game extends Scene {
 
     mostrarInfoEnergia(nome) {
   const mapa = {
-    energiaEolica: 'energiaEolica',
+    energiaEolica: 'eolica',
     energiaHidreletrica: 'hidreletrica',
     energiaMaremotriz: 'maremotriz',
     energiaBiomassa: 'biomassa',
     energiaHidrogenio: 'hidrogenio',
-    energiaSolar: 'energiaSolar',
+    energiaSolar: 'solar',
     energiaGeotermica: 'geotermica'
   };
 
   const chaveQuiz = mapa[nome];
-  if (!chaveQuiz) {
-    console.warn('Quiz não encontrado para', nome);
+  if (!chaveQuiz) return;
+  
+  if (!this.energiasRespondidas) this.energiasRespondidas = new Set();
+
+  if (this.energiasRespondidas.has(chaveQuiz)) {
+    alert("Já respondeu estas perguntas");
     return;
   }
 
   const perguntas = quizData[chaveQuiz];
-  if (!perguntas) {
-    console.warn('Perguntas não encontradas para chave:', chaveQuiz);
-    return;
-  }
+  if (!perguntas) return;
 
-  new QuizModal(perguntas, chaveQuiz, () => {
-    console.log('Quiz finalizado');
+ 
+  new QuizModal(perguntas, chaveQuiz, (pontuacaoQuiz) => {
+   
+    this.energiasRespondidas.add(chaveQuiz);
+
+  
+    this.totalPontuacao = (this.totalPontuacao || 0) + pontuacaoQuiz;
+  });
+}
+
+enviarPontuacaoFinal() {
+  const userId = 1; 
+  const pontuacao = this.totalPontuacao;
+
+  fetch('backend/save_score.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: `user_id=${userId}&score=${pontuacao}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert(`Jogo finalizado!\nPontuação total: ${pontuacao} pontos.`);
+    } else {
+      alert(`Erro ao salvar pontuação: ${data.message}`);
+    }
+  })
+  .catch(error => {
+    console.error('Erro:', error);
+    alert('Erro ao conectar com o servidor.');
   });
 }
 }

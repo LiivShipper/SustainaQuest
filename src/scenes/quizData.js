@@ -1,5 +1,5 @@
 export const quizData = {
-  energiaSolar: [
+  solar: [
     {
       pergunta: "Qual dispositivo converte diretamente a luz solar em energia elétrica?",
       opcoes: [
@@ -89,7 +89,7 @@ export const quizData = {
     }
   ],
 
-  energiaEolica: [
+  eolica: [
     {
       pergunta: "Qual é o principal fator que determina a eficiência de um aerogerador?",
       opcoes: [
