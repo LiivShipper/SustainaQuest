@@ -2,3 +2,8 @@
     font-family: 'Equestria';
     src: url(./fonte/Equestria-yJY2.ttf) format('truetype');
 }
+
+@font-face {
+    font-family: 'Poppins';
+    src: url(./fonte/Poppins-Regular.ttf) format('truetype');
+}

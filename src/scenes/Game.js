@@ -1,6 +1,7 @@
 import { Scene } from 'phaser';
 import { quizData } from './quizData.js';
 import { QuizModal } from './QuizModal.js';
+import { atualizarXP } from './barraXP.js';
 
 export class Game extends Scene {
     constructor() {
@@ -12,7 +13,7 @@ export class Game extends Scene {
     preload() {
         this.load.image('tiles', 'assets/tilesets.png');
         this.load.tilemapTiledJSON('mapa', 'assets/sustainaQuest.json');
-        this.load.spritesheet('player', 'assets/player22.png', {
+        this.load.spritesheet('player', 'assets/player.png', {
             frameWidth: 32,
             frameHeight: 32,
         });
@@ -21,6 +22,7 @@ export class Game extends Scene {
     create() {
         this.input.setDefaultCursor('default');
         this.textures.get('tiles').setFilter(Phaser.Textures.FilterMode.NEAREST);
+        this.xpAtual = 0;
 
         const mapa = this.make.tilemap({ key: 'mapa' });
         mapa.setRenderOrder('right-down');
@@ -116,6 +118,16 @@ export class Game extends Scene {
                 }
             }
         });
+
+        atualizarXP(this.xpAtual);
+        this.acertouPergunta();
+    }
+
+    acertouPergunta() {
+        this.xpAtual += 0;
+        if (this.xpAtual > 100) this.xpAtual = 100;
+        atualizarXP(this.xpAtual);
+        console.log("Aprender sobre energia renovável, te enche de determinação!");
     }
 
     update() {
@@ -174,13 +186,13 @@ export class Game extends Scene {
 
     definirFrameParado(velocidade) {
         if (velocidade.x < 0) {
-            this.player.setFrame(18);
+            this.player.setFrame(21);
         } else if (velocidade.x > 0) {
-            this.player.setFrame(12);
+            this.player.setFrame(14);
         } else if (velocidade.y < 0) {
-            this.player.setFrame(6);
+            this.player.setFrame(8);
         } else if (velocidade.y > 0) {
-            this.player.setFrame(0);
+            this.player.setFrame(5);
         }
     }
 

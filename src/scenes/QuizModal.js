@@ -21,15 +21,15 @@ constructor(questions, energia, onComplete) {
     this.container.style.left = '50%';
     this.container.style.transform = 'translate(-50%, -50%)';
     this.container.style.padding = '20px';
-    this.container.style.background = 'rgba(0, 0, 0, 0.85)';
-    this.container.style.border = '2px solid #fff';
+    this.container.style.background = ' #ffc979';
+    this.container.style.border = '4px solid #b14e05';
     this.container.style.borderRadius = '10px';
     this.container.style.zIndex = '1000';
     this.container.style.width = '400px';
     this.container.style.textAlign = 'left';
-    this.container.style.fontFamily = 'Arial, sans-serif';
-    this.container.style.color = '#fff';
-    this.container.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.3)';
+    this.container.style.fontFamily = 'Poppins, sans-serif';
+    this.container.style.color = ' #56160c';
+    this.container.style.boxShadow = '0 0 15px #d68f54';
 
     document.body.appendChild(this.container);
     this.renderQuestion();
@@ -44,6 +44,7 @@ constructor(questions, energia, onComplete) {
     questionEl.style.fontWeight = 'bold';
     questionEl.style.fontSize = '18px';
     questionEl.style.marginBottom = '15px';
+    questionEl.style.fontFamily = 'Poppins, sans-serif';
     this.container.appendChild(questionEl);
 
     q.opcoes.forEach((opcao, index) => {
@@ -54,16 +55,17 @@ constructor(questions, energia, onComplete) {
       btn.style.margin = '10px 0';
       btn.style.padding = '10px 15px';
       btn.style.width = '100%';
-      btn.style.background = '#444';
-      btn.style.color = '#fff';
+      btn.style.background = ' #d68f54';
+      btn.style.color = ' #56160c';
       btn.style.border = 'none';
       btn.style.borderRadius = '6px';
       btn.style.cursor = 'pointer';
       btn.style.fontSize = '16px';
+      btn.style.fontFamily = 'Poppins, sans-serif';
       btn.style.transition = 'background-color 0.3s ease';
 
-      btn.onmouseenter = () => btn.style.background = '#666';
-      btn.onmouseleave = () => btn.style.background = '#444';
+      btn.onmouseenter = () => btn.style.background = ' #f2b16b';
+      btn.onmouseleave = () => btn.style.background = ' #d68f54';
 
       btn.onclick = () => this.handleAnswer(index);
 
