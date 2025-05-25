@@ -1,9 +1,0 @@
-<form action="save_score.php" method="POST">
-  <label>User ID:</label>
-  <input type="number" name="user_id" value="1"><br>
-  <label>Score:</label>
-  <input type="number" name="score" value="80"><br>
-  <label>Energia:</label>
-  <input type="text" name="energia" value="solar"><br>
-  <input type="submit" value="Guardar puntuación">
-</form>
