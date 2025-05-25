@@ -87,38 +87,14 @@ constructor(questions, energia, onComplete) {
       this.endQuiz();
     }
   }
+endQuiz() {
 
-  endQuiz() {
-    alert(`Quiz finalizado! Você acertou ${this.score} de ${this.questions.length}`);
+  this.container.remove();
 
-    this.container.remove();
-
-    const userId = 1; 
-    const score = this.score;
-    const energia = this.energia;
-
-    fetch('save_score.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: `user_id=${userId}&score=${score}&energia=${encodeURIComponent(energia)}`
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert(' Pontuação salva com sucesso!');
-      } else {
-        alert(' Erro ao salvar pontuação: ' + data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Erro:', error);
-      alert('Erro de conexão ao salvar pontuação.');
-    });
-
-    this.onComplete();
-  }
+  
+  this.onComplete(this.score);
 }
+  
+  }
 
 export { QuizModal };

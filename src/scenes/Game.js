@@ -8,6 +8,7 @@ export class Game extends Scene {
         super('Game');
         this.player = null;
         this.cursors = null;
+        this.usuario = null; 
     }
 
     preload() {
@@ -23,6 +24,12 @@ export class Game extends Scene {
         this.input.setDefaultCursor('default');
         this.textures.get('tiles').setFilter(Phaser.Textures.FilterMode.NEAREST);
         this.xpAtual = 0;
+        this.energiasRespondidas = new Set();
+        this.pontuacoesPorEnergia = {};
+        this.totalPontuacao = 0;
+
+        
+        this.usuario = this.obtenerUsuario();
 
         const mapa = this.make.tilemap({ key: 'mapa' });
         mapa.setRenderOrder('right-down');
@@ -42,7 +49,6 @@ export class Game extends Scene {
             'porBaixo'
         ];
 
-
         const camadas = nomesCamadas.map(nome => mapa.createLayer(nome, tileset, 0, 0));
         const camadaPorBaixo = camadas.find(layer => layer.layer.name === 'porBaixo');
         if (camadaPorBaixo) camadaPorBaixo.setDepth(10);
@@ -59,8 +65,6 @@ export class Game extends Scene {
             down: Phaser.Input.Keyboard.KeyCodes.S,
             right: Phaser.Input.Keyboard.KeyCodes.D
         });
-
-
 
         camadas.forEach(camada => {
             camada.setCollisionByProperty({ colider: true });
@@ -83,7 +87,6 @@ export class Game extends Scene {
             'energiaSolar',
             'energiaGeotermica',
         ];
-
 
         this.input.on('pointermove', pointer => {
             let encontrouTile = false;
@@ -121,6 +124,15 @@ export class Game extends Scene {
 
         atualizarXP(this.xpAtual);
         this.acertouPergunta();
+    }
+
+    obtenerUsuario() {
+        let usuario = localStorage.getItem('usuarioId');
+        if (!usuario) {
+            usuario = 'user_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+            localStorage.setItem('usuarioId', usuario);
+        }
+        return usuario;
     }
 
     acertouPergunta() {
@@ -197,61 +209,70 @@ export class Game extends Scene {
     }
 
     mostrarInfoEnergia(nome) {
-  const mapa = {
-    energiaEolica: 'eolica',
-    energiaHidreletrica: 'hidreletrica',
-    energiaMaremotriz: 'maremotriz',
-    energiaBiomassa: 'biomassa',
-    energiaHidrogenio: 'hidrogenio',
-    energiaSolar: 'solar',
-    energiaGeotermica: 'geotermica'
-  };
+        const mapa = {
+            energiaEolica: 'eolica',
+            energiaHidreletrica: 'hidreletrica',
+            energiaMaremotriz: 'maremotriz',
+            energiaBiomassa: 'biomassa',
+            energiaHidrogenio: 'hidrogenio',
+            energiaSolar: 'solar',
+            energiaGeotermica: 'geotermica'
+        };
 
-  const chaveQuiz = mapa[nome];
-  if (!chaveQuiz) return;
-  
-  if (!this.energiasRespondidas) this.energiasRespondidas = new Set();
+        const chaveQuiz = mapa[nome];
+        if (!chaveQuiz) return;
 
-  if (this.energiasRespondidas.has(chaveQuiz)) {
-    alert("Já respondeu estas perguntas");
-    return;
-  }
+        if (this.energiasRespondidas.has(chaveQuiz)) {
+            alert("Já respondeu estas perguntas");
+            return;
+        }
 
-  const perguntas = quizData[chaveQuiz];
-  if (!perguntas) return;
+        const perguntas = quizData[chaveQuiz];
+        if (!perguntas) return;
 
- 
-  new QuizModal(perguntas, chaveQuiz, (pontuacaoQuiz) => {
-   
-    this.energiasRespondidas.add(chaveQuiz);
+        new QuizModal(perguntas, chaveQuiz, (pontuacaoQuiz) => {
+            this.energiasRespondidas.add(chaveQuiz);
+            this.pontuacoesPorEnergia[chaveQuiz] = pontuacaoQuiz;  // <-- guardo puntaje individual
+            this.totalPontuacao += pontuacaoQuiz;
 
-  
-    this.totalPontuacao = (this.totalPontuacao || 0) + pontuacaoQuiz;
-  });
-}
+            this.xpAtual += (pontuacaoQuiz / 21) * 100;
+            if (this.xpAtual > 100) this.xpAtual = 100;
 
-enviarPontuacaoFinal() {
-  const userId = 1; 
-  const pontuacao = this.totalPontuacao;
+            atualizarXP(this.xpAtual);
 
-  fetch('backend/save_score.php', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: `user_id=${userId}&score=${pontuacao}`
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert(`Jogo finalizado!\nPontuação total: ${pontuacao} pontos.`);
-    } else {
-      alert(`Erro ao salvar pontuação: ${data.message}`);
+            if (this.energiasRespondidas.size === 7) {
+                this.mostrarResultadoFinal();
+                this.enviarPontuacaoFinal();
+            }
+        });
     }
-  })
-  .catch(error => {
-    console.error('Erro:', error);
-    alert('Erro ao conectar com o servidor.');
-  });
-}
+
+    mostrarResultadoFinal() {
+        const totalPerguntas = 21;
+        const acertadas = this.totalPontuacao || 0;
+        const percentual = ((acertadas / totalPerguntas) * 100).toFixed(2);
+
+        alert(`Você completou o jogo com ${percentual}% de acertos!\nVocê respondeu corretamente ${acertadas} de ${totalPerguntas} perguntas.`);
+    }
+
+    enviarPontuacaoFinal() {
+        const usuario = this.usuario; // uso del usuario guardado
+        const pontuacoes = this.pontuacoesPorEnergia;
+        const pontuacao_total = this.totalPontuacao;
+
+        fetch('http://localhost:8081/sustainaquest/backend/salvar_pontuacao.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario, pontuacoes, pontuacao_total }),
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Pontuações salvas corretamente');
+            } else {
+                console.error('Erro ao salvar pontuações', data.message);
+            }
+        })
+        .catch(err => console.error('Erro na solicitação:', err));
+    }
 }
