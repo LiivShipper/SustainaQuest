@@ -1,13 +1,13 @@
 class QuizModal {
-constructor(questions, energia, onComplete) {
-  this.questions = questions;
-  this.energia = energia;
-  this.currentQuestion = 0;
-  this.score = 0;
-  this.onComplete = typeof onComplete === "function" ? onComplete : () => {};
-  this.container = null;
-  this.render();
-}
+  constructor(questions, energia, onComplete) {
+    this.questions = questions;
+    this.energia = energia;
+    this.currentQuestion = 0;
+    this.score = 0;
+    this.onComplete = typeof onComplete === "function" ? onComplete : () => {};
+    this.container = null;
+    this.render();
+  }
 
   render() {
     const existing = document.getElementById('quiz-modal');
@@ -21,14 +21,14 @@ constructor(questions, energia, onComplete) {
     this.container.style.left = '50%';
     this.container.style.transform = 'translate(-50%, -50%)';
     this.container.style.padding = '20px';
-    this.container.style.background = ' #ffc979';
+    this.container.style.background = '#ffc979';
     this.container.style.border = '4px solid #b14e05';
     this.container.style.borderRadius = '10px';
     this.container.style.zIndex = '1000';
     this.container.style.width = '400px';
     this.container.style.textAlign = 'left';
     this.container.style.fontFamily = 'Poppins, sans-serif';
-    this.container.style.color = ' #56160c';
+    this.container.style.color = '#56160c';
     this.container.style.boxShadow = '0 0 15px #d68f54';
 
     document.body.appendChild(this.container);
@@ -44,7 +44,6 @@ constructor(questions, energia, onComplete) {
     questionEl.style.fontWeight = 'bold';
     questionEl.style.fontSize = '18px';
     questionEl.style.marginBottom = '15px';
-    questionEl.style.fontFamily = 'Poppins, sans-serif';
     this.container.appendChild(questionEl);
 
     q.opcoes.forEach((opcao, index) => {
@@ -55,8 +54,8 @@ constructor(questions, energia, onComplete) {
       btn.style.margin = '10px 0';
       btn.style.padding = '10px 15px';
       btn.style.width = '100%';
-      btn.style.background = ' #d68f54';
-      btn.style.color = ' #56160c';
+      btn.style.background = '#d68f54';
+      btn.style.color = '#56160c';
       btn.style.border = 'none';
       btn.style.borderRadius = '6px';
       btn.style.cursor = 'pointer';
@@ -64,8 +63,8 @@ constructor(questions, energia, onComplete) {
       btn.style.fontFamily = 'Poppins, sans-serif';
       btn.style.transition = 'background-color 0.3s ease';
 
-      btn.onmouseenter = () => btn.style.background = ' #f2b16b';
-      btn.onmouseleave = () => btn.style.background = ' #d68f54';
+      btn.onmouseenter = () => btn.style.background = '#f2b16b';
+      btn.onmouseleave = () => btn.style.background = '#d68f54';
 
       btn.onclick = () => this.handleAnswer(index);
 
@@ -87,14 +86,32 @@ constructor(questions, energia, onComplete) {
       this.endQuiz();
     }
   }
-endQuiz() {
 
-  this.container.remove();
+  endQuiz() {
+    this.container.innerHTML = '';
 
-  
-  this.onComplete(this.score);
-}
-  
+    const resultado = document.createElement('p');
+    resultado.innerText = `Você acertou ${this.score}/${this.questions.length} perguntas.`;
+    resultado.style.fontWeight = 'bold';
+    resultado.style.fontSize = '18px';
+    resultado.style.marginBottom = '20px';
+    this.container.appendChild(resultado);
+
+    const botaoFechar = document.createElement('button');
+    botaoFechar.innerText = 'Fechar';
+    botaoFechar.style.padding = '10px 20px';
+    botaoFechar.style.background = '#b14e05';
+    botaoFechar.style.color = '#fff';
+    botaoFechar.style.border = 'none';
+    botaoFechar.style.borderRadius = '6px';
+    botaoFechar.style.cursor = 'pointer';
+    botaoFechar.onclick = () => {
+      this.container.remove();
+      this.onComplete(this.score);
+    };
+
+    this.container.appendChild(botaoFechar);
   }
+}
 
 export { QuizModal };

@@ -29,7 +29,7 @@ export class Game extends Scene {
         this.totalPontuacao = 0;
 
         
-        this.usuario = this.obtenerUsuario();
+        this.usuario = this.obterUsuario();
 
         const mapa = this.make.tilemap({ key: 'mapa' });
         mapa.setRenderOrder('right-down');
@@ -126,7 +126,7 @@ export class Game extends Scene {
         this.acertouPergunta();
     }
 
-    obtenerUsuario() {
+    obterUsuario() {
         let usuario = localStorage.getItem('usuarioId');
         if (!usuario) {
             usuario = 'user_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
@@ -209,51 +209,128 @@ export class Game extends Scene {
     }
 
     mostrarInfoEnergia(nome) {
-        const mapa = {
-            energiaEolica: 'eolica',
-            energiaHidreletrica: 'hidreletrica',
-            energiaMaremotriz: 'maremotriz',
-            energiaBiomassa: 'biomassa',
-            energiaHidrogenio: 'hidrogenio',
-            energiaSolar: 'solar',
-            energiaGeotermica: 'geotermica'
-        };
+    const chaveQuiz = {
+        energiaEolica: 'eolica',
+        energiaHidreletrica: 'hidreletrica',
+        energiaMaremotriz: 'maremotriz',
+        energiaBiomassa: 'biomassa',
+        energiaHidrogenio: 'hidrogenio',
+        energiaSolar: 'solar',
+        energiaGeotermica: 'geotermica'
+    }[nome];
 
-        const chaveQuiz = mapa[nome];
-        if (!chaveQuiz) return;
+    if (this.energiasRespondidas.has(chaveQuiz)) {
+        const existingModal = document.getElementById('quiz-modal');
+        if (existingModal) existingModal.remove();
 
-        if (this.energiasRespondidas.has(chaveQuiz)) {
-            alert("Já respondeu estas perguntas");
-            return;
-        }
+        const container = document.createElement('div');
+        container.id = 'quiz-modal';
+        container.style.position = 'absolute';
+        container.style.top = '50%';
+        container.style.left = '50%';
+        container.style.transform = 'translate(-50%, -50%)';
+        container.style.padding = '20px';
+        container.style.background = '#ffc979';
+        container.style.border = '4px solid #b14e05';
+        container.style.borderRadius = '10px';
+        container.style.zIndex = '1000';
+        container.style.width = '400px';
+        container.style.textAlign = 'center';
+        container.style.fontFamily = 'Poppins, sans-serif';
+        container.style.color = '#56160c';
+        container.style.boxShadow = '0 0 15px #d68f54';
 
-        const perguntas = quizData[chaveQuiz];
-        if (!perguntas) return;
+        const mensagem = document.createElement('p');
+        mensagem.innerText = 'Você já respondeu essa energia!';
+        mensagem.style.fontWeight = 'bold';
+        mensagem.style.fontSize = '18px';
+        mensagem.style.marginBottom = '20px';
 
-        new QuizModal(perguntas, chaveQuiz, (pontuacaoQuiz) => {
-            this.energiasRespondidas.add(chaveQuiz);
-            this.pontuacoesPorEnergia[chaveQuiz] = pontuacaoQuiz;  // <-- guardo puntaje individual
-            this.totalPontuacao += pontuacaoQuiz;
+        const fecharBtn = document.createElement('button');
+        fecharBtn.innerText = 'Fechar';
+        fecharBtn.style.padding = '10px 20px';
+        fecharBtn.style.background = '#b14e05';
+        fecharBtn.style.color = '#fff';
+        fecharBtn.style.border = 'none';
+        fecharBtn.style.borderRadius = '6px';
+        fecharBtn.style.cursor = 'pointer';
+        fecharBtn.onclick = () => container.remove();
 
-            this.xpAtual += (pontuacaoQuiz / 21) * 100;
-            if (this.xpAtual > 100) this.xpAtual = 100;
+        container.appendChild(mensagem);
+        container.appendChild(fecharBtn);
+        document.body.appendChild(container);
 
-            atualizarXP(this.xpAtual);
-
-            if (this.energiasRespondidas.size === 7) {
-                this.mostrarResultadoFinal();
-                this.enviarPontuacaoFinal();
-            }
-        });
+        return;
     }
+
+    const perguntas = quizData[chaveQuiz];
+    if (!perguntas) return;
+
+    new QuizModal(perguntas, chaveQuiz, (pontuacaoQuiz) => {
+        this.energiasRespondidas.add(chaveQuiz);
+        this.pontuacoesPorEnergia[chaveQuiz] = pontuacaoQuiz;
+        this.totalPontuacao += pontuacaoQuiz;
+
+        this.xpAtual += (pontuacaoQuiz / 21) * 100;
+        if (this.xpAtual > 100) this.xpAtual = 100;
+
+        atualizarXP(this.xpAtual);
+
+        if (this.energiasRespondidas.size === 7) {
+            this.mostrarResultadoFinal();
+            this.enviarPontuacaoFinal();
+        }
+    });
+}
 
     mostrarResultadoFinal() {
-        const totalPerguntas = 21;
-        const acertadas = this.totalPontuacao || 0;
-        const percentual = ((acertadas / totalPerguntas) * 100).toFixed(2);
+  const totalPerguntas = 21;
+  const acertadas = this.totalPontuacao || 0;
+  const percentual = ((acertadas / totalPerguntas) * 100).toFixed(2);
 
-        alert(`Você completou o jogo com ${percentual}% de acertos!\nVocê respondeu corretamente ${acertadas} de ${totalPerguntas} perguntas.`);
-    }
+  let mensagem = '';
+  if (percentual >= 80) {
+    mensagem = '🎉 Parabéns! Você mandou muito bem!';
+  } else if (percentual >= 50) {
+    mensagem = '👍 Muito bem! Continue assim!';
+  } else {
+    mensagem = '💡 Não desista do seu aprendizado! Você pode melhorar!';
+  }
+
+  const final = document.createElement('div');
+  final.id = 'resultado-final';
+
+  final.style.position = 'absolute';
+  final.style.top = '50%';
+  final.style.left = '50%';
+  final.style.transform = 'translate(-50%, -50%)';
+  final.style.padding = '20px';
+  final.style.background = '#ffc979';
+  final.style.border = '4px solid #b14e05';
+  final.style.borderRadius = '10px';
+  final.style.zIndex = '1000';
+  final.style.width = '450px';
+  final.style.textAlign = 'center';
+  final.style.fontFamily = 'Poppins, sans-serif';
+  final.style.color = '#56160c';
+  final.style.boxShadow = '0 0 15px #d68f54';
+
+  final.innerHTML = `
+    <h2 style="margin-bottom: 10px;">Fim do jogo!</h2>
+    <p style="font-size: 18px;">Você completou o jogo com ${percentual}% de acertos.</p>
+    <p style="font-size: 18px;">Você acertou ${acertadas} de ${totalPerguntas} perguntas.</p>
+    <p style="font-size: 18px; margin-top: 10px;">${mensagem}</p>
+    <button id="fechar-final" style="margin-top: 15px; padding: 10px 20px; background: #d68f54; border: none; border-radius: 6px; color: #56160c; font-family: Poppins, sans-serif; font-size: 16px; cursor: pointer;">
+      Fechar
+    </button>
+  `;
+
+  document.body.appendChild(final);
+
+  document.getElementById('fechar-final').onclick = () => {
+    final.remove();
+  };
+}
 
     enviarPontuacaoFinal() {
         const usuario = this.usuario; // uso del usuario guardado
