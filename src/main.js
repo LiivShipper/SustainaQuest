@@ -1,7 +1,8 @@
 import { Game } from './scenes/Game';
-import { GameOver } from './scenes/GameOver';
+import { Finaljogo } from './scenes/FinalJogo';
 import { MainMenu } from './scenes/MainMenu';
 import { atualizarXP } from './scenes/barraXP';
+import { FeedbackScene } from './scenes/FeedbackScene';
 
 const config = {
   type: Phaser.AUTO,
@@ -23,7 +24,8 @@ const config = {
   scene: [
     MainMenu,
     Game,
-    GameOver
+    Finaljogo,
+    FeedbackScene
   ]
 };
 

@@ -36,7 +36,7 @@ export class MainMenu extends Scene
                 this.input.setDefaultCursor('pointer');
             });
 
-            menuTexto.on('pointerrout', () => {
+            menuTexto.on('pointerout', () => {
                 this.input.setDefaultCursor('default');
             });
         });

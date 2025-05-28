@@ -95,16 +95,20 @@ class QuizModal {
     resultado.style.fontWeight = 'bold';
     resultado.style.fontSize = '18px';
     resultado.style.marginBottom = '20px';
+    resultado.style.textAlign = 'center';
     this.container.appendChild(resultado);
 
     const botaoFechar = document.createElement('button');
     botaoFechar.innerText = 'Fechar';
     botaoFechar.style.padding = '10px 20px';
-    botaoFechar.style.background = '#b14e05';
-    botaoFechar.style.color = '#fff';
+    botaoFechar.style.background = '#d68f54';
+    botaoFechar.style.color = '#56160c';
     botaoFechar.style.border = 'none';
     botaoFechar.style.borderRadius = '6px';
     botaoFechar.style.cursor = 'pointer';
+    botaoFechar.style.display = 'block';
+    botaoFechar.style.margin = '5px auto';
+
     botaoFechar.onclick = () => {
       this.container.remove();
       this.onComplete(this.score);

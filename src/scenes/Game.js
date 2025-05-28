@@ -8,7 +8,7 @@ export class Game extends Scene {
         super('Game');
         this.player = null;
         this.cursors = null;
-        this.usuario = null; 
+        this.usuario = null;
     }
 
     preload() {
@@ -28,7 +28,7 @@ export class Game extends Scene {
         this.pontuacoesPorEnergia = {};
         this.totalPontuacao = 0;
 
-        
+
         this.usuario = this.obterUsuario();
 
         const mapa = this.make.tilemap({ key: 'mapa' });
@@ -139,7 +139,6 @@ export class Game extends Scene {
         this.xpAtual += 0;
         if (this.xpAtual > 100) this.xpAtual = 100;
         atualizarXP(this.xpAtual);
-        console.log("Aprender sobre energia renovável, te enche de determinação!");
     }
 
     update() {
@@ -209,131 +208,145 @@ export class Game extends Scene {
     }
 
     mostrarInfoEnergia(nome) {
-    const chaveQuiz = {
-        energiaEolica: 'eolica',
-        energiaHidreletrica: 'hidreletrica',
-        energiaMaremotriz: 'maremotriz',
-        energiaBiomassa: 'biomassa',
-        energiaHidrogenio: 'hidrogenio',
-        energiaSolar: 'solar',
-        energiaGeotermica: 'geotermica'
-    }[nome];
+        const chaveQuiz = {
+            energiaEolica: 'eolica',
+            energiaHidreletrica: 'hidreletrica',
+            energiaMaremotriz: 'maremotriz',
+            energiaBiomassa: 'biomassa',
+            energiaHidrogenio: 'hidrogenio',
+            energiaSolar: 'solar',
+            energiaGeotermica: 'geotermica'
+        }[nome];
 
-    if (this.energiasRespondidas.has(chaveQuiz)) {
-        const existingModal = document.getElementById('quiz-modal');
-        if (existingModal) existingModal.remove();
+        if (this.energiasRespondidas.has(chaveQuiz)) {
+            const existingModal = document.getElementById('quiz-modal');
+            if (existingModal) existingModal.remove();
 
-        const container = document.createElement('div');
-        container.id = 'quiz-modal';
-        container.style.position = 'absolute';
-        container.style.top = '50%';
-        container.style.left = '50%';
-        container.style.transform = 'translate(-50%, -50%)';
-        container.style.padding = '20px';
-        container.style.background = '#ffc979';
-        container.style.border = '4px solid #b14e05';
-        container.style.borderRadius = '10px';
-        container.style.zIndex = '1000';
-        container.style.width = '400px';
-        container.style.textAlign = 'center';
-        container.style.fontFamily = 'Poppins, sans-serif';
-        container.style.color = '#56160c';
-        container.style.boxShadow = '0 0 15px #d68f54';
+            const container = document.createElement('div');
+            container.id = 'quiz-modal';
+            container.style.position = 'absolute';
+            container.style.top = '50%';
+            container.style.left = '50%';
+            container.style.transform = 'translate(-50%, -50%)';
+            container.style.padding = '20px';
+            container.style.background = '#ffc979';
+            container.style.border = '4px solid #b14e05';
+            container.style.borderRadius = '10px';
+            container.style.zIndex = '1000';
+            container.style.width = '400px';
+            container.style.textAlign = 'center';
+            container.style.fontFamily = 'Poppins, sans-serif';
+            container.style.color = '#56160c';
+            container.style.boxShadow = '0 0 15px #d68f54';
 
-        const mensagem = document.createElement('p');
-        mensagem.innerText = 'Você já respondeu essa energia!';
-        mensagem.style.fontWeight = 'bold';
-        mensagem.style.fontSize = '18px';
-        mensagem.style.marginBottom = '20px';
+            const mensagem = document.createElement('p');
+            mensagem.innerText = 'Você já respondeu essa energia!';
+            mensagem.style.fontWeight = 'bold';
+            mensagem.style.fontSize = '18px';
+            mensagem.style.marginBottom = '20px';
 
-        const fecharBtn = document.createElement('button');
-        fecharBtn.innerText = 'Fechar';
-        fecharBtn.style.padding = '10px 20px';
-        fecharBtn.style.background = '#b14e05';
-        fecharBtn.style.color = '#fff';
-        fecharBtn.style.border = 'none';
-        fecharBtn.style.borderRadius = '6px';
-        fecharBtn.style.cursor = 'pointer';
-        fecharBtn.onclick = () => container.remove();
+            const fecharBtn = document.createElement('button');
+            fecharBtn.innerText = 'Fechar';
+            fecharBtn.style.padding = '10px 20px';
+            fecharBtn.style.background = '#b14e05';
+            fecharBtn.style.color = '#fff';
+            fecharBtn.style.border = 'none';
+            fecharBtn.style.borderRadius = '6px';
+            fecharBtn.style.cursor = 'pointer';
+            fecharBtn.onclick = () => container.remove();
 
-        container.appendChild(mensagem);
-        container.appendChild(fecharBtn);
-        document.body.appendChild(container);
+            container.appendChild(mensagem);
+            container.appendChild(fecharBtn);
+            document.body.appendChild(container);
 
-        return;
+            return;
+        }
+
+        const perguntas = quizData[chaveQuiz];
+        if (!perguntas) return;
+
+        new QuizModal(perguntas, chaveQuiz, (pontuacaoQuiz) => {
+            this.energiasRespondidas.add(chaveQuiz);
+            this.pontuacoesPorEnergia[chaveQuiz] = pontuacaoQuiz;
+            this.totalPontuacao += pontuacaoQuiz;
+
+            this.xpAtual += (pontuacaoQuiz / 21) * 100;
+            if (this.xpAtual > 100) this.xpAtual = 100;
+
+            atualizarXP(this.xpAtual);
+
+            if (this.energiasRespondidas.size === 7) {
+                this.mostrarResultadoFinal();
+                this.enviarPontuacaoFinal();
+            }
+        });
     }
 
-    const perguntas = quizData[chaveQuiz];
-    if (!perguntas) return;
-
-    new QuizModal(perguntas, chaveQuiz, (pontuacaoQuiz) => {
-        this.energiasRespondidas.add(chaveQuiz);
-        this.pontuacoesPorEnergia[chaveQuiz] = pontuacaoQuiz;
-        this.totalPontuacao += pontuacaoQuiz;
-
-        this.xpAtual += (pontuacaoQuiz / 21) * 100;
-        if (this.xpAtual > 100) this.xpAtual = 100;
-
-        atualizarXP(this.xpAtual);
-
-        if (this.energiasRespondidas.size === 7) {
-            this.mostrarResultadoFinal();
-            this.enviarPontuacaoFinal();
-        }
-    });
-}
-
     mostrarResultadoFinal() {
-  const totalPerguntas = 21;
-  const acertadas = this.totalPontuacao || 0;
-  const percentual = ((acertadas / totalPerguntas) * 100).toFixed(2);
+        const totalPerguntas = 21;
+        const acertadas = this.totalPontuacao || 0;
+        const percentual = ((acertadas / totalPerguntas) * 100).toFixed(2);
 
-  let mensagem = '';
-  if (percentual >= 80) {
-    mensagem = '🎉 Parabéns! Você mandou muito bem!';
-  } else if (percentual >= 50) {
-    mensagem = '👍 Muito bem! Continue assim!';
-  } else {
-    mensagem = '💡 Não desista do seu aprendizado! Você pode melhorar!';
-  }
+        let mensagem = '';
+        if (percentual >= 80) {
+            mensagem = '🎉 Aprender sobre energia renovável, te enche de determinação!';
+        } else if (percentual >= 50) {
+            mensagem = '👍 Muito bem! Continue assim!';
+        } else {
+            mensagem = '💡 Não desista do seu aprendizado! Você pode melhorar!';
+        }
 
-  const final = document.createElement('div');
-  final.id = 'resultado-final';
+        const final = document.createElement('div');
+        final.id = 'resultado-final';
 
-  final.style.position = 'absolute';
-  final.style.top = '50%';
-  final.style.left = '50%';
-  final.style.transform = 'translate(-50%, -50%)';
-  final.style.padding = '20px';
-  final.style.background = '#ffc979';
-  final.style.border = '4px solid #b14e05';
-  final.style.borderRadius = '10px';
-  final.style.zIndex = '1000';
-  final.style.width = '450px';
-  final.style.textAlign = 'center';
-  final.style.fontFamily = 'Poppins, sans-serif';
-  final.style.color = '#56160c';
-  final.style.boxShadow = '0 0 15px #d68f54';
+        final.style.position = 'absolute';
+        final.style.top = '50%';
+        final.style.left = '50%';
+        final.style.transform = 'translate(-50%, -50%)';
+        final.style.padding = '20px';
+        final.style.background = '#ffc979';
+        final.style.border = '4px solid #b14e05';
+        final.style.borderRadius = '10px';
+        final.style.zIndex = '1000';
+        final.style.width = '450px';
+        final.style.textAlign = 'center';
+        final.style.fontFamily = 'Poppins, sans-serif';
+        final.style.color = '#56160c';
+        final.style.boxShadow = '0 0 15px #d68f54';
 
-  final.innerHTML = `
+        final.innerHTML = `
+  <div style="text-align: center; font-family: Poppins, sans-serif; color: #56160c;">
     <h2 style="margin-bottom: 10px;">Fim do jogo!</h2>
-    <p style="font-size: 18px;">Você completou o jogo com ${percentual}% de acertos.</p>
-    <p style="font-size: 18px;">Você acertou ${acertadas} de ${totalPerguntas} perguntas.</p>
-    <p style="font-size: 18px; margin-top: 10px;">${mensagem}</p>
-    <button id="fechar-final" style="margin-top: 15px; padding: 10px 20px; background: #d68f54; border: none; border-radius: 6px; color: #56160c; font-family: Poppins, sans-serif; font-size: 16px; cursor: pointer;">
+    <p style="font-size: 18px; margin: 8px 0;">Você completou o jogo com <strong>${percentual}%</strong> de acertos.</p>
+    <p style="font-size: 18px; margin: 8px 0;">Você acertou <strong>${acertadas}</strong> de <strong>${totalPerguntas}</strong> perguntas.</p>
+    <p style="font-size: 18px; margin: 15px 0;">${mensagem}</p>
+    <button id="fechar-final" 
+      style="
+        margin-top: 15px; 
+        padding: 10px 25px; 
+        background: #d68f54; 
+        border: none; 
+        border-radius: 8px; 
+        color: #56160c; 
+        font-size: 16px; 
+        cursor: pointer; 
+        transition: background 0.3s;
+      ">
       Fechar
     </button>
-  `;
+  </div>
+`;
 
-  document.body.appendChild(final);
+        document.body.appendChild(final);
 
-  document.getElementById('fechar-final').onclick = () => {
-    final.remove();
-  };
-}
+        document.getElementById('fechar-final').onclick = () => {
+            final.remove();
+            this.scene.start('FeedbackScene');
+        };
+    }
 
     enviarPontuacaoFinal() {
-        const usuario = this.usuario; // uso del usuario guardado
+        const usuario = this.usuario;
         const pontuacoes = this.pontuacoesPorEnergia;
         const pontuacao_total = this.totalPontuacao;
 
@@ -342,14 +355,14 @@ export class Game extends Scene {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ usuario, pontuacoes, pontuacao_total }),
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Pontuações salvas corretamente');
-            } else {
-                console.error('Erro ao salvar pontuações', data.message);
-            }
-        })
-        .catch(err => console.error('Erro na solicitação:', err));
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Pontuações salvas corretamente');
+                } else {
+                    console.error('Erro ao salvar pontuações', data.message);
+                }
+            })
+            .catch(err => console.error('Erro na solicitação:', err));
     }
 }

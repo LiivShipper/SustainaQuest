@@ -13,7 +13,7 @@ export const quizData = {
       pergunta: "Qual é a principal limitação da energia solar?",
       opcoes: [
         "Produz poluição sonora",
-        "Depende da disponibilidade de luz solar (intermitência)",
+        "Depende da disponibilidade de luz solar",
         "Exige combustíveis fósseis para operar"
       ],
       correta: 1
@@ -64,7 +64,7 @@ export const quizData = {
       pergunta: "Qual processo industrial é mais usado atualmente para produzir hidrogênio?",
       opcoes: [
         "Fotossíntese artificial",
-        "Reforma a vapor do gás natural (CH₄ + H₂O)",
+        "Reforma a vapor do gás natural",
         "Fissão nuclear"
       ],
       correta: 1
@@ -73,7 +73,7 @@ export const quizData = {
       pergunta: "Por que o hidrogênio é considerado um 'combustível limpo' quando usado em células a combustível?",
       opcoes: [
         "Porque é extraído do petróleo sem emissões",
-        "Porque seu subproduto é apenas água (H₂O)",
+        "Porque seu subproduto é apenas água",
         "Porque não requer energia para ser produzido"
       ],
       correta: 1
@@ -142,7 +142,7 @@ export const quizData = {
       pergunta: "O que significa UHE, CH e PCH no contexto de hidrelétricas?",
       opcoes: [
         "Tipos de turbinas",
-        "Classificação por porte (Usina Hidrelétrica de Energia, Central Hidrelétrica, Pequena Central Hidrelétrica)",
+        "Classificação por porte",
         "Métodos de construção"
       ],
       correta: 1
@@ -163,7 +163,7 @@ export const quizData = {
       pergunta: "Qual país abriga a maior usina de energia maremotriz do mundo em operação?",
       opcoes: [
         "Japão",
-        "Coreia do Sul (Usina de Sihwa Lake, 254 MW)",
+        "Coreia do Sul",
         "Noruega"
       ],
       correta: 1
@@ -193,7 +193,7 @@ export const quizData = {
       pergunta: "Qual inovação permite usar energia geotérmica em regiões sem vulcanismo ativo?",
       opcoes: [
         "Turbinas eólicas híbridas",
-        "Sistemas Geotérmicos Estimulados (EGS)",
+        "Sistemas Geotérmicos Estimulados",
         "Painéis solares térmicos"
       ],
       correta: 1
@@ -202,8 +202,8 @@ export const quizData = {
       pergunta: "Qual porcentagem da energia elétrica da Islândia vem de fontes geotérmicas?",
       opcoes: [
         "~10%",
-        "~25%",
-        "~50%"
+        "~50%",
+        "~25%"
       ],
       correta: 2
     }
