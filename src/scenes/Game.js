@@ -1,7 +1,8 @@
 import { Scene } from 'phaser';
 import { quizData } from './quizData.js';
 import { QuizModal } from './QuizModal.js';
-import { atualizarXP } from './barraXP.js';
+import { atualizarVisibilidadeXP, atualizarXP } from './barraXP.js';
+import { descricoesEnergias } from './descricoesEnergias.js';
 
 export class Game extends Scene {
     constructor() {
@@ -21,6 +22,7 @@ export class Game extends Scene {
     }
 
     create() {
+        atualizarVisibilidadeXP('game');
         this.input.setDefaultCursor('default');
         this.textures.get('tiles').setFilter(Phaser.Textures.FilterMode.NEAREST);
         this.xpAtual = 0;
@@ -218,26 +220,83 @@ export class Game extends Scene {
             energiaGeotermica: 'geotermica'
         }[nome];
 
+        const descricao = descricoesEnergias[chaveQuiz];
+
+        if (!descricao) return;
+
+        const existingModal = document.getElementById('descricao-modal');
+        if (existingModal) existingModal.remove();
+
+        const container = document.createElement('div');
+        container.id = 'descricao-modal';
+        container.style.position = 'absolute';
+        container.style.top = '50%';
+        container.style.left = '50%';
+        container.style.transform = 'translate(-50%, -50%)';
+        container.style.padding = '20px';
+        container.style.background = '#ffc979';
+        container.style.border = '4px solid #b14e05';
+        container.style.borderRadius = '10px';
+        container.style.zIndex = '1000';
+        container.style.width = '400px';
+        container.style.textAlign = 'center';
+        container.style.fontFamily = 'Poppins, sans-serif';
+        container.style.color = '#56160c';
+        container.style.boxShadow = '0 0 15px #d68f54';
+
+        const titulo = document.createElement('h2');
+        titulo.innerText = `Energia ${chaveQuiz.charAt(0).toUpperCase() + chaveQuiz.slice(1)}`;
+        titulo.style.marginBottom = '15px';
+
+        const texto = document.createElement('p');
+        texto.innerText = descricao;
+        texto.style.marginBottom = '20px';
+        texto.style.textAlign = 'justify';
+
+        const iniciarBtn = document.createElement('button');
+        iniciarBtn.innerText = 'Iniciar quiz';
+        iniciarBtn.style.padding = '10px 20px';
+        iniciarBtn.style.background = '#b14e05';
+        iniciarBtn.style.color = '#fff';
+        iniciarBtn.style.border = 'none';
+        iniciarBtn.style.borderRadius = '6px';
+        iniciarBtn.style.cursor = 'pointer';
+        iniciarBtn.style.marginRight = '10px';
+        iniciarBtn.onclick = () => {
+            container.remove();
+            this.iniciarQuiz(chaveQuiz);
+        }
+        
+        container.appendChild(titulo);
+        container.appendChild(texto);
+        container.appendChild(iniciarBtn);
+
+        document.body.appendChild(container);
+    }
+
+    iniciarQuiz(chaveQuiz) {
         if (this.energiasRespondidas.has(chaveQuiz)) {
             const existingModal = document.getElementById('quiz-modal');
             if (existingModal) existingModal.remove();
 
             const container = document.createElement('div');
             container.id = 'quiz-modal';
-            container.style.position = 'absolute';
-            container.style.top = '50%';
-            container.style.left = '50%';
-            container.style.transform = 'translate(-50%, -50%)';
-            container.style.padding = '20px';
-            container.style.background = '#ffc979';
-            container.style.border = '4px solid #b14e05';
-            container.style.borderRadius = '10px';
-            container.style.zIndex = '1000';
-            container.style.width = '400px';
-            container.style.textAlign = 'center';
-            container.style.fontFamily = 'Poppins, sans-serif';
-            container.style.color = '#56160c';
-            container.style.boxShadow = '0 0 15px #d68f54';
+            container.style = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: #ffc979;
+            border: 4px solid #b14e05;
+            border-radius: 10px;
+            z-index: 1000;
+            width: 400px;
+            text-align: center;
+            font-family: Poppins, sans-serif;
+            color: #56160c;
+            box-shadow: 0 0 15px #d68f54;
+        `;
 
             const mensagem = document.createElement('p');
             mensagem.innerText = 'Você já respondeu essa energia!';
@@ -247,12 +306,14 @@ export class Game extends Scene {
 
             const fecharBtn = document.createElement('button');
             fecharBtn.innerText = 'Fechar';
-            fecharBtn.style.padding = '10px 20px';
-            fecharBtn.style.background = '#b14e05';
-            fecharBtn.style.color = '#fff';
-            fecharBtn.style.border = 'none';
-            fecharBtn.style.borderRadius = '6px';
-            fecharBtn.style.cursor = 'pointer';
+            fecharBtn.style = `
+            padding: 10px 20px;
+            background: #b14e05;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        `;
             fecharBtn.onclick = () => container.remove();
 
             container.appendChild(mensagem);

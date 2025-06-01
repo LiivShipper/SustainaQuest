@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import { atualizarVisibilidadeXP } from './barraXP';
 
 export class Finaljogo extends Scene {
     constructor() {
@@ -10,6 +11,7 @@ export class Finaljogo extends Scene {
     }
 
     create() {
+        atualizarVisibilidadeXP('final');
         this.add.image(512, 384, 'finalGame');
 
         document.fonts.load('10pt "Equestria"').then(() => {

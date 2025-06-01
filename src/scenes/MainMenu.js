@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import { atualizarVisibilidadeXP } from './barraXP';
 
 export class MainMenu extends Scene
 {
@@ -13,6 +14,7 @@ export class MainMenu extends Scene
     }
 
     create () {
+        atualizarVisibilidadeXP('main');
         this.add.image(512, 384, 'fundoMainMenu');
         this.add.image(512, 300, 'logoSustainaQuest');
 

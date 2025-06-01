@@ -6,3 +6,17 @@ export function atualizarXP(porcentagem) {
         console.warn('Elemento xp-fill não encontrado!');
     }
 }
+
+export function atualizarVisibilidadeXP(cenaAtual) {
+    const barra = document.getElementById('xp-bar');
+    if (!barra) {
+        console.warn('Elemento xp-bar não encontrado!');
+        return;
+    }
+
+    if (cenaAtual === 'game') {
+        barra.style.display = 'block';
+    } else {
+        barra.style.display = 'none';
+    }
+}
