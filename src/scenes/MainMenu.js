@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { atualizarVisibilidadeXP } from './barraXP';
+import { atualizarVisibilidadeXP } from './barraXP.js';
 
 export class MainMenu extends Scene
 {
