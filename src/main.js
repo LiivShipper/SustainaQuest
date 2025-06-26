@@ -1,8 +1,8 @@
-import { Game } from './scenes/Game';
-import { Finaljogo } from './scenes/FinalJogo';
-import { MainMenu } from './scenes/MainMenu';
-import { atualizarXP } from './scenes/barraXP';
-import { FeedbackScene } from './scenes/FeedbackScene';
+import { Game } from './scenes/Game.js';
+import { Finaljogo } from './scenes/FinalJogo.js';
+import { MainMenu } from './scenes/MainMenu.js';
+import { atualizarXP } from './scenes/barraXP.js';
+import { FeedbackScene } from './scenes/FeedbackScene.js';
 
 const config = {
   type: Phaser.AUTO,

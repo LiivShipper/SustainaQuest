@@ -9,7 +9,7 @@
         "build-nolog": "webpack --config webpack/config.prod.js"
     },
     "repository": {
-        "type": "git",
+        "type": "module",
         "url": "git+https://github.com/phaserjs/template-webpack.git"
     },
     "author": "Phaser Studio <support@phaser.io> (https://phaser.io/)",
